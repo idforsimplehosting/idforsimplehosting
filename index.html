@@ -1,305 +1,286 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title> json </title>
-<meta charset="utf-8">
-<style>
+  <title> json </title>
+  <meta charset="utf-8">
+  <style>
+    .country {
+      fill: #ccc;
+      stroke: #fff;
+      stroke-width: .5px;
+    }
 
-.country {
-  fill: #ccc;
-  stroke: #fff;
-  stroke-width: .5px;
-}
+    svg circle {
+      fill: orange;
+      opacity: .5;
+      stroke: white;
+    }
 
-svg circle {
-	fill: orange;
-	opacity: .5;
-	stroke: white;
-}
-svg circle:hover {
-	fill: red;
-	stroke: #333;
-}
-
-</style>
+    svg circle:hover {
+      fill: red;
+      stroke: #333;
+    }
+  </style>
 </head>
 
 <body>
-<h1>D3와 geojson을 이용한 지도 데이터 시각화</h1>
-<button onclick = "mercator()">mercator</button>
-<button onclick = "orthographic()">orthographic</button>
-<button onclick = "stereographic()">stereographic</button>
-<button onclick = "conicEquidistant()">conicEquidistant</button>
-<button onclick = "azimuthalEquidistant()">azimuthalEquidistant</button><br><br>
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://d3js.org/topojson.v1.min.js"></script>
-<script>
-function mercator() {
-  d3.select('svg').remove();
+  <h1>D3와 geojson을 이용한 지도 데이터 시각화</h1>
+  <button onclick="mercator()">mercator</button>
+  <button onclick="orthographic()">orthographic</button>
+  <button onclick="stereographic()">stereographic</button>
+  <button onclick="conicEquidistant()">conicEquidistant</button>
+  <button onclick="azimuthalEquidistant()">azimuthalEquidistant</button><br><br>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://d3js.org/topojson.v1.min.js"></script>
+  <script>
+    function mercator() {
+      d3.select('svg').remove();
 
-  projection = d3.geo.mercator();
+      projection = d3.geo.mercator();
 
-  path = d3.geo.path()
-    .projection(projection);
+      path = d3.geo.path()
+        .projection(projection);
 
-  svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .style("border", "1px solid black");
+      svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("border", "1px solid black");
 
-  d3.json("world.json", function(world) {
-    var countries = topojson.feature(world, world.objects.countries).features
+      d3.json("world.json", function(world) {
+        var countries = topojson.feature(world, world.objects.countries).features
 
-    svg.selectAll(".country")
-      .data(countries)
-      .enter().insert("path")
-      .attr("class", "country")
-      .attr("d", path)
+        svg.selectAll(".country")
+          .data(countries)
+          .enter().insert("path")
+          .attr("class", "country")
+          .attr("d", path)
 
-    /* 그림에 점을 찍는 좌표 데이터 */
-    var moscow = [36.2672843, 55.5784905];
-    sydney = [151.1750583, -33.86783];
-    london = [-0.12775829999998223, 51.5910899];
-    seoul = [126.8494654, 37.5650172];
-    newyork = [-74.5387542, 40.6971811];
+        var moscow = [36.2672843, 55.5784905];
+        sydney = [151.1750583, -33.86783];
+        london = [-0.12775829999998223, 51.5910899];
+        seoul = [126.8494654, 37.5650172];
+        newyork = [-74.5387542, 40.6971811];
 
-    console.log(moscow, sydney, london, seoul, newyork);
+        svg.selectAll("circle")
+          .data([moscow, sydney, london, seoul, newyork]).enter()
+          .append("circle")
+          .attr("cx", function(d) {
+            return projection(d)[0];
+          })
+          .attr("cy", function(d) {
+            return projection(d)[1];
+          })
+          .attr("r", "7px")
+      });
+    }
 
-    /* 프로젝션한 좌표(점) 부분을 circle로 그린다 */
-    svg.selectAll("circle")
-      .data([moscow, sydney, london, seoul, newyork]).enter()
-      .append("circle")
-      .attr("cx", function(d) {
-        return projection(d)[0];
-      })
-      .attr("cy", function(d) {
-        return projection(d)[1];
-      })
-      .attr("r", "7px")
-  });
-}
+    function orthographic() {
+      d3.select('svg').remove();
 
-function orthographic() {
-  d3.select('svg').remove();
+      projection = d3.geo.orthographic();
 
-  projection = d3.geo.orthographic();
+      path = d3.geo.path()
+        .projection(projection);
 
-  path = d3.geo.path()
-    .projection(projection);
+      svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("border", "1px solid black");
 
-  svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .style("border", "1px solid black");
+      d3.json("world.json", function(world) {
+        var countries = topojson.feature(world, world.objects.countries).features
 
-  d3.json("world.json", function(world) {
-    var countries = topojson.feature(world, world.objects.countries).features
+        svg.selectAll(".country")
+          .data(countries)
+          .enter().insert("path")
+          .attr("class", "country")
+          .attr("d", path)
 
-    svg.selectAll(".country")
-      .data(countries)
-      .enter().insert("path")
-      .attr("class", "country")
-      .attr("d", path)
+        var moscow = [36.2672843, 55.5784905];
+        sydney = [151.1750583, -33.86783];
+        london = [-0.12775829999998223, 51.5910899];
+        seoul = [126.8494654, 37.5650172];
+        newyork = [-74.5387542, 40.6971811];
 
-    /* 그림에 점을 찍는 좌표 데이터 */
-    var moscow = [36.2672843, 55.5784905];
-    sydney = [151.1750583, -33.86783];
-    london = [-0.12775829999998223, 51.5910899];
-    seoul = [126.8494654, 37.5650172];
-    newyork = [-74.5387542, 40.6971811];
+        svg.selectAll("circle")
+          .data([moscow, sydney, london, seoul, newyork]).enter()
+          .append("circle")
+          .attr("cx", function(d) {
+            return projection(d)[0];
+          })
+          .attr("cy", function(d) {
+            return projection(d)[1];
+          })
+          .attr("r", "7px")
+      });
+    }
 
-    console.log(moscow, sydney, london, seoul, newyork);
+    function stereographic() {
+      d3.select('svg').remove();
 
-    /* 프로젝션한 좌표(점) 부분을 circle로 그린다 */
-    svg.selectAll("circle")
-      .data([moscow, sydney, london, seoul, newyork]).enter()
-      .append("circle")
-      .attr("cx", function(d) {
-        return projection(d)[0];
-      })
-      .attr("cy", function(d) {
-        return projection(d)[1];
-      })
-      .attr("r", "7px")
-  });
-}
+      projection = d3.geo.stereographic();
 
-function stereographic() {
-  d3.select('svg').remove();
+      path = d3.geo.path()
+        .projection(projection);
 
-  projection = d3.geo.stereographic();
+      svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("border", "1px solid black");
 
-  path = d3.geo.path()
-    .projection(projection);
+      d3.json("world.json", function(world) {
+        var countries = topojson.feature(world, world.objects.countries).features
 
-  svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .style("border", "1px solid black");
+        svg.selectAll(".country")
+          .data(countries)
+          .enter().insert("path")
+          .attr("class", "country")
+          .attr("d", path)
 
-  d3.json("world.json", function(world) {
-    var countries = topojson.feature(world, world.objects.countries).features
+        var moscow = [36.2672843, 55.5784905];
+        sydney = [151.1750583, -33.86783];
+        london = [-0.12775829999998223, 51.5910899];
+        seoul = [126.8494654, 37.5650172];
+        newyork = [-74.5387542, 40.6971811];
 
-    svg.selectAll(".country")
-      .data(countries)
-      .enter().insert("path")
-      .attr("class", "country")
-      .attr("d", path)
+        svg.selectAll("circle")
+          .data([moscow, sydney, london, seoul, newyork]).enter()
+          .append("circle")
+          .attr("cx", function(d) {
+            return projection(d)[0];
+          })
+          .attr("cy", function(d) {
+            return projection(d)[1];
+          })
+          .attr("r", "7px")
+      });
+    }
 
-    /* 그림에 점을 찍는 좌표 데이터 */
-    var moscow = [36.2672843, 55.5784905];
-    sydney = [151.1750583, -33.86783];
-    london = [-0.12775829999998223, 51.5910899];
-    seoul = [126.8494654, 37.5650172];
-    newyork = [-74.5387542, 40.6971811];
+    function conicEquidistant() {
+      d3.select('svg').remove();
 
-    console.log(moscow, sydney, london, seoul, newyork);
+      projection = d3.geo.conicEquidistant();
 
-    /* 프로젝션한 좌표(점) 부분을 circle로 그린다 */
-    svg.selectAll("circle")
-      .data([moscow, sydney, london, seoul, newyork]).enter()
-      .append("circle")
-      .attr("cx", function(d) {
-        return projection(d)[0];
-      })
-      .attr("cy", function(d) {
-        return projection(d)[1];
-      })
-      .attr("r", "7px")
-  });
-}
+      path = d3.geo.path()
+        .projection(projection);
 
-function conicEquidistant() {
-  d3.select('svg').remove();
+      svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("border", "1px solid black");
 
-  projection = d3.geo.conicEquidistant();
+      d3.json("world.json", function(world) {
+        var countries = topojson.feature(world, world.objects.countries).features
 
-  path = d3.geo.path()
-    .projection(projection);
+        svg.selectAll(".country")
+          .data(countries)
+          .enter().insert("path")
+          .attr("class", "country")
+          .attr("d", path)
 
-  svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .style("border", "1px solid black");
+        var moscow = [36.2672843, 55.5784905];
+        sydney = [151.1750583, -33.86783];
+        london = [-0.12775829999998223, 51.5910899];
+        seoul = [126.8494654, 37.5650172];
+        newyork = [-74.5387542, 40.6971811];
 
-  d3.json("world.json", function(world) {
-    var countries = topojson.feature(world, world.objects.countries).features
+        svg.selectAll("circle")
+          .data([moscow, sydney, london, seoul, newyork]).enter()
+          .append("circle")
+          .attr("cx", function(d) {
+            return projection(d)[0];
+          })
+          .attr("cy", function(d) {
+            return projection(d)[1];
+          })
+          .attr("r", "7px")
+      });
+    }
 
-    svg.selectAll(".country")
-      .data(countries)
-      .enter().insert("path")
-      .attr("class", "country")
-      .attr("d", path)
+    function azimuthalEquidistant() {
+      d3.select('svg').remove();
 
-    /* 그림에 점을 찍는 좌표 데이터 */
-    var moscow = [36.2672843, 55.5784905];
-    sydney = [151.1750583, -33.86783];
-    london = [-0.12775829999998223, 51.5910899];
-    seoul = [126.8494654, 37.5650172];
-    newyork = [-74.5387542, 40.6971811];
+      projection = d3.geo.azimuthalEquidistant();
 
-    console.log(moscow, sydney, london, seoul, newyork);
+      path = d3.geo.path()
+        .projection(projection);
 
-    /* 프로젝션한 좌표(점) 부분을 circle로 그린다 */
-    svg.selectAll("circle")
-      .data([moscow, sydney, london, seoul, newyork]).enter()
-      .append("circle")
-      .attr("cx", function(d) {
-        return projection(d)[0];
-      })
-      .attr("cy", function(d) {
-        return projection(d)[1];
-      })
-      .attr("r", "7px")
-  });
-}
+      svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("border", "1px solid black");
 
-function azimuthalEquidistant() {
-  d3.select('svg').remove();
+      d3.json("world.json", function(world) {
+        var countries = topojson.feature(world, world.objects.countries).features
 
-  projection = d3.geo.azimuthalEquidistant();
+        svg.selectAll(".country")
+          .data(countries)
+          .enter().insert("path")
+          .attr("class", "country")
+          .attr("d", path)
 
-  path = d3.geo.path()
-    .projection(projection);
+        var moscow = [36.2672843, 55.5784905];
+        sydney = [151.1750583, -33.86783];
+        london = [-0.12775829999998223, 51.5910899];
+        seoul = [126.8494654, 37.5650172];
+        newyork = [-74.5387542, 40.6971811];
 
-  svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .style("border", "1px solid black");
+        svg.selectAll("circle")
+          .data([moscow, sydney, london, seoul, newyork]).enter()
+          .append("circle")
+          .attr("cx", function(d) {
+            return projection(d)[0];
+          })
+          .attr("cy", function(d) {
+            return projection(d)[1];
+          })
+          .attr("r", "7px")
+      });
+    }
+  </script>
 
-  d3.json("world.json", function(world) {
-    var countries = topojson.feature(world, world.objects.countries).features
+  <script>
+    var width = 950,
+      height = 500;
 
-    svg.selectAll(".country")
-      .data(countries)
-      .enter().insert("path")
-      .attr("class", "country")
-      .attr("d", path)
+    var projection = d3.geo.equirectangular();
 
-    /* 그림에 점을 찍는 좌표 데이터 */
-    var moscow = [36.2672843, 55.5784905];
-    sydney = [151.1750583, -33.86783];
-    london = [-0.12775829999998223, 51.5910899];
-    seoul = [126.8494654, 37.5650172];
-    newyork = [-74.5387542, 40.6971811];
+    var path = d3.geo.path()
+      .projection(projection);
 
-    console.log(moscow, sydney, london, seoul, newyork);
+    var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .style("border", "1px solid black");
 
-    /* 프로젝션한 좌표(점) 부분을 circle로 그린다 */
-    svg.selectAll("circle")
-      .data([moscow, sydney, london, seoul, newyork]).enter()
-      .append("circle")
-      .attr("cx", function(d) {
-        return projection(d)[0];
-      })
-      .attr("cy", function(d) {
-        return projection(d)[1];
-      })
-      .attr("r", "7px")
-  });
-}
-</script>
-<script>
+    d3.json("world.json", function(world) {
+      var countries = topojson.feature(world, world.objects.countries).features;
 
-var width = 950,
-    height = 500;
+      svg.selectAll(".country")
+        .data(countries)
+        .enter().insert("path")
+        .attr("class", "country")
+        .attr("d", path)
 
-var projection = d3.geo.equirectangular();
+      var moscow = [36.2672843, 55.5784905];
+      sydney = [151.1750583, -33.86783];
+      london = [-0.12775829999998223, 51.5910899];
+      seoul = [126.8494654, 37.5650172];
+      newyork = [-74.5387542, 40.6971811];
 
-var path = d3.geo.path()
-    .projection(projection);
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .style("border", "1px solid black");
-
-d3.json("world.json", function(world){
-  var countries = topojson.feature(world, world.objects.countries).features;
-
-svg.selectAll(".country")
-    .data(countries)
-    .enter().insert("path")
-    .attr("class", "country")
-    .attr("d", path)
-
-/* 그림에 점을 찍는 좌표 데이터 */
-var moscow = [36.2672843, 55.5784905];
-  	sydney = [151.1750583, -33.86783];
-  	london = [-0.12775829999998223, 51.5910899];
-		seoul = [126.8494654, 37.5650172];
-		newyork = [-74.5387542, 40.6971811];
-
-   console.log(moscow,sydney,london,seoul,newyork);
-
-    /* 프로젝션한 좌표(점) 부분을 circle로 그린다 */
-  svg.selectAll("circle")
-      .data([moscow,sydney,london,seoul,newyork]).enter()
-      .append("circle")
-  	   .attr("cx", function (d) { return projection(d)[0]; })
-    	 .attr("cy", function (d) { return projection(d)[1]; })
-    	 .attr("r", "7px")
-});
-</script>
+      svg.selectAll("circle")
+        .data([moscow, sydney, london, seoul, newyork]).enter()
+        .append("circle")
+        .attr("cx", function(d) {
+          return projection(d)[0];
+        })
+        .attr("cy", function(d) {
+          return projection(d)[1];
+        })
+        .attr("r", "7px")
+    });
+  </script>
 </body>
+
 </html>
